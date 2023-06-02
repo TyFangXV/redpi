@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Clone</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Monomaniac+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="searchbar">
+    <input class="search" placeholder="Search" id="search"/>
+    <button id="btn_search">Search</button>
+  </div>
+  <div class="app__videos" id="app__videos">
+    <div class="video">
+      <img class="video__player" src="https://i.redd.it/mb7sldqupe3b1.jpg"></img>
+
+
+      <div class="videoSidebar">
+        <div class="videoSidebar__button">
+          <span class="material-icons"> favorite_border </span>
+          <p>12</p>
+        </div>
+
+        <div class="videoSidebar__button">
+          <span class="material-icons"> message </span>
+          <p>23</p>
+        </div>
+
+        <div class="videoSidebar__button">
+          <span class="material-icons"> share </span>
+          <p>75</p>
+        </div>
+      </div>
+
+      <div class="videoFooter">
+        <div class="videoFooter__text">
+          <h3 class="videoFooter__title">Somanath Goudar</h3>
+          <p class="videoFooter__description">Best Video Ever</p>
+
+          <div class="videoFooter__ticker">
+            <span class="material-icons videoFooter__icon"> music_note </span>
+            <marquee>Song name</marquee>
+          </div>
+        </div>
+        <img
+          src="https://static.thenounproject.com/png/934821-200.png"
+          alt=""
+          class="videoFooter__record"
+        />
+      </div>
+    </div>
+
+    <!-- video ends -->
+  </div>
+
+
+  <script>
+    const seachButton = document.getElementById("btn_search");
+    seachButton.addEventListener("click", () => { 
+      const search = document.getElementById("search");
+      console.log(search.value);
+      clearDynamicData();
+      main(search.value);
+    });
+
+    const clearDynamicData = () => {
+      const dynamicData = document.getElementById("app__videos");
+      const videoDivs = dynamicData.getElementsByClassName("video");
+      // Remove all video divs except the first one
+      while (videoDivs.length > 1) {
+        videoDivs[1].remove();
+      }
+    };
+
+    const main = async (reddit) => {
+  console.log("Functioned");
+  try {
+    const response = await fetch(`https://www.reddit.com/r/${reddit || "meme"}.json`);
+    const { data } = await response.json();
+    const dataSet = data.children;
+
+    // Sorting the array based on the "title" property in ascending order
+    dataSet.sort((a, b) => {
+      const titleA = a.data.title.toUpperCase();
+      const titleB = b.data.title.toUpperCase();
+      if (titleA < titleB) return -1;
+      if (titleA > titleB) return 1;
+      return 0;
+    });
+
+    // Extracting "title" and "url_overridden_by_dest" properties into a new object
+    const extractedData = dataSet.map((obj) => {
+      const { title, url } = obj.data;
+      return { title, url };
+    });
+
+    // Displaying the extracted data in the browser
+    const dynamicData = document.getElementById("app__videos");
+
+    extractedData.forEach((item, index) => {
+      if (index === 0) return; // Skip the first div
+
+      // Block specific URLs
+      if (item.url.includes("discord") || item.url.includes("redgif")) return;
+
+      const div = document.createElement("div");
+      div.className = "video";
+      div.innerHTML = `
+        <img class="video__player" src="${item.url}"></img>
+        <!-- sidebar -->
+        <div class="videoSidebar">
+          <div class="videoSidebar__button">
+            <span class="material-icons"> favorite_border </span>
+            <p>12</p>
+          </div>
+
+          <div class="videoSidebar__button">
+            <span class="material-icons"> message </span>
+            <p>23</p>
+          </div>
+
+          <div class="videoSidebar__button">
+            <span class="material-icons"> share </span>
+            <p>75</p>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div class="videoFooter">
+          <div class="videoFooter__text">
+            <h3 class="videoFooter__title">${item.title}</h3>
+            <p class="videoFooter__description">Best Video Ever</p>
+
+            <div class="videoFooter__ticker">
+              <span class="material-icons videoFooter__icon"> music_note </span>
+              <marquee>Song name</marquee>
+            </div>
+          </div>
+          <img
+            src="https://static.thenounproject.com/png/934821-200.png"
+            alt=""
+            class="videoFooter__record"
+          />
+        </div>
+      `;
+      dynamicData.appendChild(div);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+    main();
+  </script>
+</body>
+</html>
