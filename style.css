@@ -122,6 +122,23 @@
     position: absolute;
   }
   
+  .video-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Adjust the maximum width as needed */
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  .video__player {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .videoFooter__ticker {
     width: 400px;
     display: flex;
